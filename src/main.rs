@@ -3,6 +3,13 @@ pub mod memory;
 use crate::memory::*;
 
 fn main() {
-    let pid = select_process();
-    dbg!(pid);
+    // Loop until the user selects a process (by id)
+    let pid = loop {
+        match select_process() {
+            Ok(n) => break n,
+            Err(_) => clearscreen::clear().unwrap(),
+        }
+    };
+
+    println!("{:?}", pid);
 }
