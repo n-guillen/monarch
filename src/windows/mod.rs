@@ -1,28 +1,46 @@
-use sysinfo::System;
+use std::io::stdin;
+use thiserror::Error;
+use sysinfo::{Pid, System};
 
 // pub enum ScanValues {
 //     Unsigned32BitInteger,
 // }
 
-#[derive(Debug)]
-pub struct ProcessNotFoundError(usize);
-impl std::fmt::Display for ProcessNotFoundError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Unable to find process under the index {}", self.0)
-    }
-}
-impl std::error::Error for ProcessNotFoundError {}
+#[derive(Error, Debug)]
+pub enum SelectProcessError {
+    #[error("There was an issue with finding all processes.")]
+    SysInfo(#[from] sysinfo::Error),
 
-pub fn select_process() -> Result<u32, anyhow::Error> {
+    #[error("There was an issue with the user's input.")]
+    Input(#[from] std::io::Error),
+
+    #[error("There was an issue parsing the user's input.")]
+    ParsingInput(#[from] std::num::ParseIntError),
+
+    #[error("Process of pid {0} is unable to be found.")]
+    ProcessNotFound(u32),
+}
+
+/// Displays all of the system's processes and allows the user to select one.
+pub fn select_process() -> Result<u32, SelectProcessError> {
     let s = System::new_all()?;
-    for (i, (pid, process)) in s.processes().iter().enumerate() {
-        println!("({i}) {pid} - {:#?}", process.name());
+
+    // Only printing the processes that have a root path (temporary preference)
+    for (pid, process) in s.processes().iter() {
+        if process.root().is_some() {
+            println!("{0:⋅<35} {pid}", process.name().display());
+        }
     }
-    
+    // Read the user's input and then attempt to parse into usize.
     let mut input = String::new();
-    std::io::stdin().read_line(&mut input)?;
-    let i: usize = input.trim().parse()?;
-    
-    let (selected_pid, _) = s.processes().iter().nth(i).ok_or(ProcessNotFoundError(i))?;
-    Ok(selected_pid.as_u32())
+    stdin().read_line(&mut input)?;
+    let i: u32 = input.trim().parse()?;
+
+    // Return the pid if it is an actual process, otherwise return error.
+    let selected_pid = Pid::from_u32(i);
+    if s.process(selected_pid).is_some() {
+        Ok(i)
+    } else {
+        Err(SelectProcessError::ProcessNotFound(i))
+    }
 }
