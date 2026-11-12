@@ -1,6 +1,7 @@
-#[cfg_attr(windows, path = "windows/mod.rs")]
 pub mod memory;
-use crate::memory::*;
+use crate::memory::process::*;
+use crate::memory::value::read::collect_regions;
+use crate::memory::value::*;
 
 fn main() {
     // Loop until the user selects a process (by id)
@@ -10,6 +11,6 @@ fn main() {
             Err(_) => clearscreen::clear().unwrap(),
         }
     };
-
-    println!("{:?}", pid);
+    
+    // scan(pid, ScanType::ExactValue(Value::u32(1166686085)), None);
 }

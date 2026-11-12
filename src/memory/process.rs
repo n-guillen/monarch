@@ -1,10 +1,5 @@
 use std::io::stdin;
 use thiserror::Error;
-use sysinfo::{Pid, System};
-
-// pub enum ScanValues {
-//     Unsigned32BitInteger,
-// }
 
 #[derive(Error, Debug)]
 pub enum SelectProcessError {
@@ -23,7 +18,7 @@ pub enum SelectProcessError {
 
 /// Displays all of the system's processes and allows the user to select one.
 pub fn select_process() -> Result<u32, SelectProcessError> {
-    let s = System::new_all()?;
+    let s = sysinfo::System::new_all()?;
 
     // Only printing the processes that have a root path (temporary preference)
     for (pid, process) in s.processes().iter() {
@@ -37,7 +32,7 @@ pub fn select_process() -> Result<u32, SelectProcessError> {
     let i: u32 = input.trim().parse()?;
 
     // Return the pid if it is an actual process, otherwise return error.
-    let selected_pid = Pid::from_u32(i);
+    let selected_pid = sysinfo::Pid::from_u32(i);
     if s.process(selected_pid).is_some() {
         Ok(i)
     } else {
