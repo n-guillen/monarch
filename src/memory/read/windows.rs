@@ -3,7 +3,7 @@ use windows::Win32::{Foundation::HANDLE, System::{Diagnostics::Debug::ReadProces
 use thiserror::Error;
 use windows::Win32::System::Memory::MEMORY_BASIC_INFORMATION;
 
-use crate::memory::region::Region;
+use crate::memory::{region::Region, value::Address};
 
 impl From<MEMORY_BASIC_INFORMATION> for Region {
     fn from(value: MEMORY_BASIC_INFORMATION) -> Self {
@@ -47,6 +47,19 @@ impl Region {
         } {
             Ok(_) => buffer,
             Err(_) => vec![], // Strange design choice, I'll need to re-consider later.
+        }
+    }
+}
+
+impl Address {
+    pub fn to_bytes(&self, handle: &HANDLE) -> Option<Vec<u8>> {
+        let mut buffer: Vec<u8> = vec![0; self.size];
+
+        match unsafe {
+            ReadProcessMemory(*handle, self.base_address as *const c_void, buffer.as_mut_ptr() as *mut c_void, self.size, None)
+        } {
+            Ok(_) => Some(buffer),
+            Err(_) => None,
         }
     }
 }
