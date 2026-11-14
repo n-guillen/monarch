@@ -39,7 +39,7 @@ pub fn collect_regions(handle: &HANDLE) -> Vec<Region> {
 }
 
 impl Region {
-    pub fn memory_buffer(&self, handle: &HANDLE) -> Vec<u8> {
+    pub fn to_bytes(&self, handle: &HANDLE) -> Vec<u8> {
         let mut buffer: Vec<u8> = vec![0; self.region_size];
 
         match unsafe {
