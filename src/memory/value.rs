@@ -20,7 +20,7 @@ impl ValueType{
 
 pub enum ScanMode {
     Initial(ValueType, CurrentScan),
-    Continous(ValueType, EitherScan, Vec<Address>),
+    Continuous(ValueType, EitherScan, Vec<Address>),
 }
 
 pub enum EitherScan {
@@ -116,7 +116,7 @@ pub fn scan(pid: u32, mode: ScanMode) -> Option<Vec<Address>> {
             }
         },
 
-        ScanMode::Continous(value_type, scan_type, scanned_addresses) => {
+        ScanMode::Continuous(value_type, scan_type, scanned_addresses) => {
 
             for address in scanned_addresses {
                 let Some(address_data) = address.to_bytes(&handle) else {continue};

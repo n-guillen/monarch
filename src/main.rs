@@ -29,8 +29,8 @@ fn main() {
         
                 if addresses.len() < 2 { break addresses; }
                 
-                // mode = ScanMode::Continous(VALUE_TYPE, EitherScan::Current(CurrentScan::Exact(value.to_le_bytes().to_vec())), addresses);
-                mode = ScanMode::Continous(VALUE_TYPE, EitherScan::Last(LastScan::Decreased), addresses);
+                // mode = ScanMode::Continuous(VALUE_TYPE, EitherScan::Current(CurrentScan::Exact(value.to_le_bytes().to_vec())), addresses);
+                mode = ScanMode::Continuous(VALUE_TYPE, EitherScan::Last(LastScan::Decreased), addresses);
             }
             None => mode = ScanMode::Initial(VALUE_TYPE, CurrentScan::Exact(value.to_le_bytes().to_vec())),
         };
