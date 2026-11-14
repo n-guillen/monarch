@@ -1,4 +1,4 @@
-use std::ptr;
+use std::{os::raw::c_void, ptr};
 use windows::Win32::{Foundation::HANDLE, System::{Diagnostics::Debug::ReadProcessMemory, Memory::{VIRTUAL_ALLOCATION_TYPE, VirtualQueryEx}, Threading::{OpenProcess, PROCESS_ALL_ACCESS}}};
 use thiserror::Error;
 use windows::Win32::System::Memory::MEMORY_BASIC_INFORMATION;
